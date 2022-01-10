@@ -4,15 +4,29 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 @RestController
 public class LightController {
 
     private final LightModel lightModel;
 
-    public LightController(LightModel lightDao){
-        this.lightModel = lightDao;
+    public LightController(LightModel lightModel){
+        this.lightModel = lightModel;
+        Timer t = new Timer();
+        // Update light status every 5 seconds
+        t.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Light l = lightModel.findById(7);
+                if (l != null) {
+                    l.setEnabled(!l.isEnabled());
+                }
+            }
+        }, 0, 5*1000);
     }
 
     @GetMapping("/lights")
